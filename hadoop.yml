@@ -1,0 +1,88 @@
+- hosts: 192.168.43.77 
+  vars_prompt:
+  - name: namenodedir 
+    prompt: "Enter namenode directory name"
+    private: no 
+  - name: namenodeip 
+    prompt: "Enter namenode ip"
+    private: no 
+
+  tasks:
+   - name: copying hadoop file in namenode
+     copy:
+              src: /root/hadoop-1.2.1-1.x86_64.rpm
+              dest: /root/
+
+   - name: copying jdk file in name node  
+     copy:
+              src: /root/jdk-8u171-linux-x64.rpm
+              dest: /root/
+
+   - name: installing jdk
+     shell: rpm -ivh jdk-8u171-linux-x64.rpm
+     ignore_errors: True
+
+   - name: installing hadoop
+     shell: rpm -ivh hadoop-1.2.1-1.x86_64.rpm --force
+     ignore_errors: True
+
+   - name: configuring hdfs-site.xml in namenode
+     template:
+             src: "/ws1/confi/hdfs-site.xml"
+             dest: "/etc/hadoop/"
+   - name: configuring core-site.xml in namenode
+     template:
+             src: "/ws1/confi/core-site.xml" 
+             dest: "/etc/hadoop/"    
+   - name: formatting name node
+     shell: "echo Y | hadoop namenode -format"
+
+   - name: starting name node
+     shell: "hadoop-daemon.sh start namenode"
+
+
+- hosts: 192.168.43.71
+  vars_prompt:
+  - name: datadir
+    prompt: "Enter datanode directory name"
+    private: no
+
+  - name: ip
+    prompt: "Enter ip address of datanode"
+    private: no
+  
+  tasks:
+    - name: copying hadoop file in datanode
+      copy:
+              src: /root/hadoop-1.2.1-1.x86_64.rpm
+              dest: /root/
+
+    - name: copying jdk file in data node
+      copy:
+              src: /root/jdk-8u171-linux-x64.rpm
+              dest: /root/
+    - name: installing jdk
+      shell: rpm -ivh jdk-8u171-linux-x64.rpm
+      ignore_errors: True
+
+    - name: installing hadoop
+      shell: rpm -ivh hadoop-1.2.1-1.x86_64.rpm --force
+      ignore_errors: True
+
+    - name: configuring hdfs-site.xml in datanode
+      template:
+               src: "/ws1/dataconfi/hdfs-site.xml"
+               dest: "/etc/hadoop/"
+    - name: configuring core-site.xml in datanode
+      template:
+              src: "/ws1/dataconfi/core-site.xml"
+              dest: "/etc/hadoop/"
+    
+    - name: starting data node
+      shell: "hadoop-daemon.sh start datanode"
+          
+
+  
+
+
+     
